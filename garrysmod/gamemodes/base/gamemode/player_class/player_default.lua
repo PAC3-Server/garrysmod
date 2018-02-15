@@ -1,8 +1,6 @@
 
 AddCSLuaFile()
 
-include( 'taunt_camera.lua' )
-
 local PLAYER = {}
 
 PLAYER.DisplayName			= "Default Class"
