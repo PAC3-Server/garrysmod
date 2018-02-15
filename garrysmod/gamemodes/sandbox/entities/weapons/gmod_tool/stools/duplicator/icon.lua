@@ -1,17 +1,5 @@
 
-hook.Add( "PostRender", "RenderDupeIcon", function()
-
-	--
-	-- g_ClientSaveDupe is set in transport.lua when receiving a dupe from the server
-	--
-	if ( !g_ClientSaveDupe ) then return end
-
-	--
-	-- Remove the global straight away
-	--
-	local Dupe = g_ClientSaveDupe
-	g_ClientSaveDupe = nil
-
+function RenderDupeIcon(g_ClientSaveDupe)
 	local FOV = 17
 
 	--
@@ -244,4 +232,4 @@ hook.Add( "PostRender", "RenderDupeIcon", function()
 
 	end
 
-end )
+end

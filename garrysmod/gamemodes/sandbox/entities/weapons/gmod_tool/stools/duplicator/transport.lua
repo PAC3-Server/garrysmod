@@ -91,7 +91,12 @@ if ( CLIENT ) then
 			-- Set this global so we can pick it up when we're rendering a frame
 			-- See icon.lua for this process
 			--
-			g_ClientSaveDupe = util.JSONToTable( uncompressed )
+			local save_dupe = util.JSONToTable( uncompressed )
+
+			hook.Add("PostRender", "RenderDupeIcon", function()
+				RenderDupeIcon(save_dupe)
+				hook.Remove("PostRender", "RenderDupeIcon")
+			end)
 
 	end )
 

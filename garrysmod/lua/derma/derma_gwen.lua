@@ -8,19 +8,25 @@ function GWEN.CreateTextureBorder( _xo, _yo, _wo, _ho, l, t, r, b, material_over
 	local mat = SKIN && SKIN.GwenTexture || material_override
 	if ( material_override && !material_override:IsError() ) then mat = material_override end
 
+	local surface_SetDrawColor = surface.SetDrawColor
+	local surface_SetMaterial = surface.SetMaterial
+	local surface_DrawTexturedRectUV = surface.DrawTexturedRectUV
+	local tex = mat:GetTexture( "$basetexture" )
+	local W, H = mat:Width(), mat:Height()
+
 	return function( x, y, w, h, col )
 
-		local tex = mat:GetTexture( "$basetexture" )
-		local _x = _xo / tex:Width()
-		local _y = _yo / tex:Height()
-		local _w = _wo / tex:Width()
-		local _h = _ho / tex:Height()
+		local _x = _xo / W
+		local _y = _yo / H
+		local _w = _wo / W
+		local _h = _ho / H
 
-		surface.SetMaterial( mat )
+		surface_SetMaterial( mat )
+
 		if ( col ) then
-			surface.SetDrawColor( col )
+			surface_SetDrawColor( col )
 		else
-			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface_SetDrawColor( 255, 255, 255, 255 )
 		end
 
 		local left = math.min( l, math.ceil( w / 2 ) )
@@ -28,25 +34,25 @@ function GWEN.CreateTextureBorder( _xo, _yo, _wo, _ho, l, t, r, b, material_over
 		local top = math.min( t, math.ceil( h / 2 ) )
 		local bottom = math.min( b, math.floor( h / 2 ) )
 
-		local _l = left / tex:Width()
-		local _t = top / tex:Height()
-		local _r = right / tex:Width()
-		local _b = bottom / tex:Height()
+		local _l = left / W
+		local _t = top / H
+		local _r = right / W
+		local _b = bottom / H
 
 		-- top
-		surface.DrawTexturedRectUV( x, y, left, top, _x, _y, _x + _l, _y + _t )
-		surface.DrawTexturedRectUV( x + left, y, w - left - right, top, _x + _l, _y, _x + _w - _r, _y + _t )
-		surface.DrawTexturedRectUV( x + w - right, y, right, top, _x + _w - _r, _y, _x + _w, _y + _t )
+		surface_DrawTexturedRectUV( x, y, left, top, _x, _y, _x + _l, _y + _t )
+		surface_DrawTexturedRectUV( x + left, y, w - left - right, top, _x + _l, _y, _x + _w - _r, _y + _t )
+		surface_DrawTexturedRectUV( x + w - right, y, right, top, _x + _w - _r, _y, _x + _w, _y + _t )
 
 		-- middle
-		surface.DrawTexturedRectUV( x, y + top, left, h - top - bottom, _x, _y + _t, _x + _l, _y + _h - _b )
-		surface.DrawTexturedRectUV( x + left, y + top, w - left - right, h - top - bottom, _x + _l, _y + _t, _x + _w - _r, _y + _h - _b )
-		surface.DrawTexturedRectUV( x + w - right, y + top, right, h - top - bottom, _x + _w - _r, _y + _t, _x + _w, _y + _h - _b )
+		surface_DrawTexturedRectUV( x, y + top, left, h - top - bottom, _x, _y + _t, _x + _l, _y + _h - _b )
+		surface_DrawTexturedRectUV( x + left, y + top, w - left - right, h - top - bottom, _x + _l, _y + _t, _x + _w - _r, _y + _h - _b )
+		surface_DrawTexturedRectUV( x + w - right, y + top, right, h - top - bottom, _x + _w - _r, _y + _t, _x + _w, _y + _h - _b )
 
 		-- bottom
-		surface.DrawTexturedRectUV( x, y + h - bottom, left, bottom, _x, _y + _h - _b, _x + _l, _y + _h )
-		surface.DrawTexturedRectUV( x + left, y + h - bottom, w - left - right, bottom, _x + _l, _y + _h - _b, _x + _w - _r, _y + _h )
-		surface.DrawTexturedRectUV( x + w - right, y + h - bottom, right, bottom, _x + _w - _r, _y + _h - _b, _x + _w, _y + _h )
+		surface_DrawTexturedRectUV( x, y + h - bottom, left, bottom, _x, _y + _h - _b, _x + _l, _y + _h )
+		surface_DrawTexturedRectUV( x + left, y + h - bottom, w - left - right, bottom, _x + _l, _y + _h - _b, _x + _w - _r, _y + _h )
+		surface_DrawTexturedRectUV( x + w - right, y + h - bottom, right, bottom, _x + _w - _r, _y + _h - _b, _x + _w, _y + _h )
 
 	end
 
@@ -57,23 +63,28 @@ function GWEN.CreateTextureNormal( _xo, _yo, _wo, _ho, material_override )
 	local mat = SKIN && SKIN.GwenTexture || material_override
 	if ( material_override && !material_override:IsError() ) then mat = material_override end
 
+	local surface_SetDrawColor = surface.SetDrawColor
+	local surface_SetMaterial = surface.SetMaterial
+	local surface_DrawTexturedRectUV = surface.DrawTexturedRectUV
+	local tex = mat:GetTexture( "$basetexture" )
+	local W, H = mat:Width(), mat:Height()
+
 	return function( x, y, w, h, col )
 
-		local tex = mat:GetTexture( "$basetexture" )
-		_x = _xo / tex:Width()
-		_y = _yo / tex:Height()
-		_w = _wo / tex:Width()
-		_h = _ho / tex:Height()
+		_x = _xo / W
+		_y = _yo / H
+		_w = _wo / W
+		_h = _ho / H
 
-		surface.SetMaterial( mat )
+		surface_SetMaterial( mat )
 
 		if ( col ) then
-			surface.SetDrawColor( col )
+			surface_SetDrawColor( col )
 		else
-			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface_SetDrawColor( 255, 255, 255, 255 )
 		end
 
-		surface.DrawTexturedRectUV( x, y, w, h, _x, _y, _x + _w, _y + _h )
+		surface_DrawTexturedRectUV( x, y, w, h, _x, _y, _x + _w, _y + _h )
 
 	end
 
@@ -84,28 +95,33 @@ function GWEN.CreateTextureCentered( _xo, _yo, _wo, _ho, material_override )
 	local mat = SKIN && SKIN.GwenTexture || material_override
 	if ( material_override && !material_override:IsError() ) then mat = material_override end
 
+	local surface_SetDrawColor = surface.SetDrawColor
+	local surface_SetMaterial = surface.SetMaterial
+	local surface_DrawTexturedRectUV = surface.DrawTexturedRectUV
+	local tex = mat:GetTexture( "$basetexture" )
+	local W, H = mat:Width(), mat:Height()
+
 	return function( x, y, w, h, col )
 
-		local tex = mat:GetTexture( "$basetexture" )
-		_x = _xo / tex:Width()
-		_y = _yo / tex:Height()
-		_w = _wo / tex:Width()
-		_h = _ho / tex:Height()
+		_x = _xo / W
+		_y = _yo / H
+		_w = _wo / W
+		_h = _ho / H
 
 		x = x + ( w - _wo ) * 0.5
 		y = y + ( h - _ho ) * 0.5
 		w = _wo
 		h = _ho
 
-		surface.SetMaterial( mat )
+		surface_SetMaterial( mat )
 
 		if ( col ) then
-			surface.SetDrawColor( col )
+			surface_SetDrawColor( col )
 		else
-			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface_SetDrawColor( 255, 255, 255, 255 )
 		end
 
-		surface.DrawTexturedRectUV( x, y, w, h, _x, _y, _x + _w, _y + _h )
+		surface_DrawTexturedRectUV( x, y, w, h, _x, _y, _x + _w, _y + _h )
 
 	end
 

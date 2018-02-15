@@ -48,22 +48,22 @@ end
 -----------------------------------------------------------]]
 function GM:HUDShouldDraw( name )
 
-	-- Allow the weapon to override this
-	local ply = LocalPlayer()
-	if ( IsValid( ply ) ) then
-
-		local wep = ply:GetActiveWeapon()
-
-		if ( IsValid( wep ) && wep.HUDShouldDraw != nil ) then
-
-			return wep.HUDShouldDraw( wep, name )
-
-		end
-
+	if self.weapon_hudshoulddraw then
+		return self.weapon_hudshoulddraw:HUDShouldDraw(name)
 	end
 
 	return true
 
+end
+
+function GM:PlayerSwitchWeapon(player, oldWeapon, newWeapon)
+	if player == LocalPlayer() then
+		if newWeapon.HUDShouldDraw then
+			self.weapon_hudshoulddraw = newWeapon
+		else
+			self.weapon_hudshoulddraw = nil
+		end
+	end
 end
 
 --[[---------------------------------------------------------
@@ -572,7 +572,7 @@ end
 -----------------------------------------------------------]]
 function GM:PreDrawViewModel( ViewModel, Player, Weapon )
 
-	if ( !IsValid( Weapon ) ) then return false end
+	if not Weapon or not Weapon:IsValid() then return false end
 
 	player_manager.RunClass( Player, "PreDrawViewModel", ViewModel, Weapon )
 
