@@ -13,7 +13,7 @@ function GM:HandlePlayerJumping( ply, velocity )
 		if ( !ply.m_fGroundTime ) then
 
 			ply.m_fGroundTime = CurTime()
-			
+
 		elseif ( CurTime() - ply.m_fGroundTime ) > 0 && velocity:Length2D() < 0.5 then
 
 			ply.m_bJumping = true
@@ -24,14 +24,14 @@ function GM:HandlePlayerJumping( ply, velocity )
 	end
 
 	if ply.m_bJumping then
-	
+
 		if ply.m_bFirstJumpFrame then
 
 			ply.m_bFirstJumpFrame = false
 			ply:AnimRestartMainSequence()
 
 		end
-		
+
 		if ( ply:WaterLevel() >= 2 ) || ( ( CurTime() - ply.m_flJumpStartTime ) > 0.2 && ply:OnGround() ) then
 
 			ply.m_bJumping = false
@@ -39,7 +39,7 @@ function GM:HandlePlayerJumping( ply, velocity )
 			ply:AnimRestartMainSequence()
 
 		end
-		
+
 		if ply.m_bJumping then
 			ply.CalcIdeal = ACT_MP_JUMP
 			return true
@@ -163,7 +163,7 @@ function GM:HandlePlayerDriving( ply )
 			ply.CalcSeqOverride = ply:LookupSequence( "sit_rollercoaster" )
 		end
 	end
-	
+
 	local use_anims = ( ply.CalcSeqOverride == ply:LookupSequence( "sit_rollercoaster" ) || ply.CalcSeqOverride == ply:LookupSequence( "sit" ) )
 	if ( use_anims && ply:GetAllowWeaponsInVehicle() && IsValid( ply:GetActiveWeapon() ) ) then
 		local holdtype = ply:GetActiveWeapon():GetHoldType()
@@ -205,7 +205,7 @@ function GM:UpdateAnimation( ply, velocity, maxseqgroundspeed )
 	if ( ply:InVehicle() ) then
 
 		local Vehicle = ply:GetVehicle()
-		
+
 		-- We only need to do this clientside..
 		if ( CLIENT ) then
 			--
@@ -225,7 +225,7 @@ function GM:UpdateAnimation( ply, velocity, maxseqgroundspeed )
 			ply:SetPoseParameter( "vehicle_steer", steer )
 
 		end
-		
+
 	end
 
 	if ( CLIENT ) then
@@ -253,10 +253,10 @@ function GM:GrabEarAnimation( ply )
 	end
 
 	if ( ply.ChatGestureWeight > 0 ) then
-	
+
 		ply:AnimRestartGesture( GESTURE_SLOT_VCD, ACT_GMOD_IN_CHAT, true )
 		ply:AnimSetGestureWeight( GESTURE_SLOT_VCD, ply.ChatGestureWeight )
-	
+
 	end
 
 end
@@ -266,22 +266,34 @@ end
 --
 function GM:MouthMoveAnimation( ply )
 
-	local flexes = {
-		ply:GetFlexIDByName( "jaw_drop" ),
-		ply:GetFlexIDByName( "left_part" ),
-		ply:GetFlexIDByName( "right_part" ),
-		ply:GetFlexIDByName( "left_mouth_drop" ),
-		ply:GetFlexIDByName( "right_mouth_drop" )
-	}
+	if ply:IsSpeaking() then
+		local flexes = {
+			ply:GetFlexIDByName( "left_part" ),
+			ply:GetFlexIDByName( "jaw_drop" ),
+			ply:GetFlexIDByName( "right_part" ),
+			ply:GetFlexIDByName( "left_mouth_drop" ),
+			ply:GetFlexIDByName( "right_mouth_drop" )
+		}
 
-	local weight = ply:IsSpeaking() and math.Clamp( ply:VoiceVolume() * 2, 0, 2 ) or 0
+		local weight = math.Clamp( ply:VoiceVolume() * 2, 0, 2 )
 
-	for k, v in pairs( flexes ) do
+		for i, v in ipairs( flexes ) do
+			ply:SetFlexWeight( v, weight )
+		end
 
-		ply:SetFlexWeight( v, weight )
-
+		ply.reset_flexes = true
+	elseif ply.reset_flexes then
+		local flexes = {
+			ply:GetFlexIDByName( "left_part" ),
+			ply:GetFlexIDByName( "jaw_drop" ),
+			ply:GetFlexIDByName( "right_part" ),
+			ply:GetFlexIDByName( "left_mouth_drop" ),
+			ply:GetFlexIDByName( "right_mouth_drop" )
+		}
+		for i, v in ipairs( flexes ) do
+			ply:SetFlexWeight(v, 0)
+		end
 	end
-
 end
 
 function GM:CalcMainActivity( ply, velocity )
@@ -344,44 +356,44 @@ end
 function GM:DoAnimationEvent( ply, event, data )
 
 	if ( event == PLAYERANIMEVENT_ATTACK_PRIMARY ) then
-	
+
 		if ply:Crouching() then
 			ply:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_ATTACK_CROUCH_PRIMARYFIRE, true )
 		else
 			ply:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_ATTACK_STAND_PRIMARYFIRE, true )
 		end
-		
+
 		return ACT_VM_PRIMARYATTACK
-	
+
 	elseif ( event == PLAYERANIMEVENT_ATTACK_SECONDARY ) then
-	
+
 		-- there is no gesture, so just fire off the VM event
 		return ACT_VM_SECONDARYATTACK
-		
+
 	elseif ( event == PLAYERANIMEVENT_RELOAD ) then
-	
+
 		if ply:Crouching() then
 			ply:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_RELOAD_CROUCH, true )
 		else
 			ply:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_RELOAD_STAND, true )
 		end
-		
+
 		return ACT_INVALID
-		
+
 	elseif ( event == PLAYERANIMEVENT_JUMP ) then
-	
+
 		ply.m_bJumping = true
 		ply.m_bFirstJumpFrame = true
 		ply.m_flJumpStartTime = CurTime()
-	
+
 		ply:AnimRestartMainSequence()
-	
+
 		return ACT_INVALID
-	
+
 	elseif ( event == PLAYERANIMEVENT_CANCEL_RELOAD ) then
-	
+
 		ply:AnimResetGestureSlot( GESTURE_SLOT_ATTACK_AND_RELOAD )
-		
+
 		return ACT_INVALID
 	end
 
