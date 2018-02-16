@@ -286,8 +286,6 @@ hook.Add( "DrawOverlay", "DragNDropPaint", function()
 	DisableClipping( false )
 
 end )
-hook.Add( "Think", "DragNDropThink", dragndrop.Think )
-
 
 
 
@@ -409,10 +407,14 @@ function meta:OnStartDragging()
 
 	end
 
+	hook.Add( "Think", "DragNDropThink", dragndrop.Think )
+
 end
 
 function meta:OnStopDragging()
 	self.Dragging = false
+
+	hook.Remove( "Think", "DragNDropThink")
 end
 
 function meta:DragMousePress( mcode )

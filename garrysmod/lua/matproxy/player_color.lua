@@ -14,7 +14,7 @@ matproxy.Add( {
 	end,
 
 	bind = function( self, mat, ent )
-		if ( !IsValid( ent ) ) then return end
+		if not ent then return end
 
 		-- If entity is a ragdoll try to convert it into the player
 		-- ( this applies to their corpses )

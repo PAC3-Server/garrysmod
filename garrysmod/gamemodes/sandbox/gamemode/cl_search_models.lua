@@ -28,41 +28,47 @@ local function GetAllFiles( tab, folder, extension, path )
 		table.insert( queuedSearch, { tab, folder .. v .. "/", extension, path } )
 	end
 
-end
+	if not hook.GetTable().Think or not hook.GetTable().Think.sandbox_queued_search then
 
-hook.Add( "Think", "sandbox_queued_search", function()
-	if ( #queuedSearch < 1 ) then return end
+		hook.Add( "Think", "sandbox_queued_search", function()
+			if ( #queuedSearch < 1 ) then
+				hook.Remove( "Think", "sandbox_queued_search")
+				hook.Remove( "DrawOverlay","sandbox_search_progress")
+				return
+			end
 
-	local call = queuedSearch[ 1 ]
-	GetAllFiles( call[ 1 ], call[ 2 ], call[ 3 ], call[ 4 ] )
-	table.remove( queuedSearch, 1 )
+			local call = queuedSearch[ 1 ]
+			GetAllFiles( call[ 1 ], call[ 2 ], call[ 3 ], call[ 4 ] )
+			table.remove( queuedSearch, 1 )
 
-	if ( !timer.Exists( "search_models_update" ) || #queuedSearch < 1 ) then
-		timer.Create( "search_models_update", 1, 1, function() hook.Run( "SearchUpdate" ) end )
+			if ( !timer.Exists( "search_models_update" ) || #queuedSearch < 1 ) then
+				timer.Create( "search_models_update", 1, 1, function() hook.Run( "SearchUpdate" ) end )
+			end
+		end )
+
+		hook.Add( "DrawOverlay","sandbox_search_progress", function()
+			if ( !IsValid( g_SpawnMenu ) || !IsValid( g_SpawnMenu.SearchPropPanel ) || expectedCalls == 1 || totalCalls == expectedCalls ) then return end
+
+			-- This code is bad
+			--[[local pnl = g_SpawnMenu.SearchPropPanel
+			local c = pnl:GetChildren()[1]:GetChildren()[1]:GetChildren()[1]
+			if ( IsValid( c ) ) then
+				c.OriginalText = c.OriginalText or c:GetText()
+				c:SetText( c.OriginalText .. " ( Scanning: " .. math.ceil( totalCalls / expectedCalls * 100 ) .. "% )")
+			end]]
+
+			local pnl = g_SpawnMenu.SearchPropPanel
+			if ( !g_SpawnMenu:IsVisible() || !pnl:IsVisible() ) then return end
+
+			local x, y = pnl:LocalToScreen( 0, 0 )
+			local maxw = pnl:GetWide()
+			if ( pnl.VBar && pnl.VBar.Enabled ) then maxw = maxw - 20 end
+
+			draw.RoundedBox( 0, x, y, maxw, 8, Color( 0, 0, 0, 200 ) )
+			draw.RoundedBox( 0, x, y, maxw * ( totalCalls / expectedCalls ), 8, Color( 0, 128, 255, 200 ) )
+		end )
 	end
-end )
-
-hook.Add( "DrawOverlay","sandbox_search_progress", function()
-	if ( !IsValid( g_SpawnMenu ) || !IsValid( g_SpawnMenu.SearchPropPanel ) || expectedCalls == 1 || totalCalls == expectedCalls ) then return end
-
-	-- This code is bad
-	--[[local pnl = g_SpawnMenu.SearchPropPanel
-	local c = pnl:GetChildren()[1]:GetChildren()[1]:GetChildren()[1]
-	if ( IsValid( c ) ) then
-		c.OriginalText = c.OriginalText or c:GetText()
-		c:SetText( c.OriginalText .. " ( Scanning: " .. math.ceil( totalCalls / expectedCalls * 100 ) .. "% )")
-	end]]
-
-	local pnl = g_SpawnMenu.SearchPropPanel
-	if ( !g_SpawnMenu:IsVisible() || !pnl:IsVisible() ) then return end
-
-	local x, y = pnl:LocalToScreen( 0, 0 )
-	local maxw = pnl:GetWide()
-	if ( pnl.VBar && pnl.VBar.Enabled ) then maxw = maxw - 20 end
-
-	draw.RoundedBox( 0, x, y, maxw, 8, Color( 0, 0, 0, 200 ) )
-	draw.RoundedBox( 0, x, y, maxw * ( totalCalls / expectedCalls ), 8, Color( 0, 128, 255, 200 ) )
-end )
+end
 
 --
 -- Model Search

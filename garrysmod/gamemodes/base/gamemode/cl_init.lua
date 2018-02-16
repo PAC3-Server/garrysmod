@@ -178,7 +178,7 @@ end
 function GM:OnChatTab( str )
 
 	str = string.TrimRight(str)
-	
+
 	local LastWord
 	for word in string.gmatch( str, "[^ ]+" ) do
 		LastWord = word
@@ -347,7 +347,6 @@ end
 function GM:CalcView( ply, origin, angles, fov, znear, zfar )
 
 	local Vehicle	= ply:GetVehicle()
-	local Weapon	= ply:GetActiveWeapon()
 
 	local view = {}
 	view.origin		= origin
@@ -360,7 +359,7 @@ function GM:CalcView( ply, origin, angles, fov, znear, zfar )
 	--
 	-- Let the vehicle override the view and allows the vehicle view to be hooked
 	--
-	if ( IsValid( Vehicle ) ) then return hook.Run( "CalcVehicleView", Vehicle, ply, view ) end
+	if Vehicle:IsValid() then return hook.Run( "CalcVehicleView", Vehicle, ply, view ) end
 
 	--
 	-- Let drive possibly alter the view
@@ -372,14 +371,13 @@ function GM:CalcView( ply, origin, angles, fov, znear, zfar )
 	--
 	player_manager.RunClass( ply, "CalcView", view )
 
+	local Weapon = ply:GetActiveWeapon()
+
 	-- Give the active weapon a go at changing the viewmodel position
-	if ( IsValid( Weapon ) ) then
-
-		local func = Weapon.CalcView
-		if ( func ) then
-			view.origin, view.angles, view.fov = func( Weapon, ply, origin * 1, angles * 1, fov ) -- Note: *1 to copy the object so the child function can't edit it.
+	if Weapon:IsValid() then
+		if Weapon.CalcView then
+			view.origin, view.angles, view.fov = Weapon.CalcView( Weapon, ply, origin * 1, angles * 1, fov ) -- Note: *1 to copy the object so the child function can't edit it.
 		end
-
 	end
 
 	return view
@@ -406,7 +404,7 @@ end
 function GM:AdjustMouseSensitivity( fDefault )
 
 	local ply = LocalPlayer()
-	if ( !IsValid( ply ) ) then return -1 end
+	if not ply:IsValid() then return -1 end
 
 	local wep = ply:GetActiveWeapon()
 	if ( wep && wep.AdjustMouseSensitivity ) then
@@ -542,28 +540,25 @@ end
 -----------------------------------------------------------]]
 function GM:CalcViewModelView( Weapon, ViewModel, OldEyePos, OldEyeAng, EyePos, EyeAng )
 
-	if ( !IsValid( Weapon ) ) then return end
+	if not Weapon:IsValid() then return end
 
 	local vm_origin, vm_angles = EyePos, EyeAng
 
 	-- Controls the position of all viewmodels
-	local func = Weapon.GetViewModelPosition
-	if ( func ) then
-		local pos, ang = func( Weapon, EyePos*1, EyeAng*1 )
+	if Weapon.GetViewModelPosition then
+		local pos, ang = Weapon.GetViewModelPosition( Weapon, EyePos*1, EyeAng*1 )
 		vm_origin = pos or vm_origin
 		vm_angles = ang or vm_angles
 	end
 
 	-- Controls the position of individual viewmodels
-	func = Weapon.CalcViewModelView
-	if ( func ) then
-		local pos, ang = func( Weapon, ViewModel, OldEyePos*1, OldEyeAng*1, EyePos*1, EyeAng*1 )
+	if Weapon.CalcViewModelView then
+		local pos, ang = Weapon.CalcViewModelView( Weapon, ViewModel, OldEyePos*1, OldEyeAng*1, EyePos*1, EyeAng*1 )
 		vm_origin = pos or vm_origin
 		vm_angles = ang or vm_angles
 	end
 
 	return vm_origin, vm_angles
-
 end
 
 --[[---------------------------------------------------------
@@ -603,7 +598,7 @@ function GM:PostDrawViewModel( ViewModel, Player, Weapon )
 			end
 
 			hook.Call( "PostDrawPlayerHands", self, hands, ViewModel, Player, Weapon )
-			
+
 		end
 
 	end

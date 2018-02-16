@@ -49,11 +49,9 @@ end
 --
 function Call( name, mat, ent )
 
-	local proxy = ActiveList[ name ]
-	if ( !proxy ) then return end
-	if ( !proxy.bind ) then return end
-
-	proxy:bind( mat, ent )
+	if ActiveList[ name ] then
+		ActiveList[ name ]:bind( mat, ent )
+	end
 
 end
 

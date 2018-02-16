@@ -1,8 +1,6 @@
 
 DEFINE_BASECLASS( "DImageButton" )
 
-local g_Active = nil
-
 local PANEL = {}
 
 AccessorFunc( PANEL, "m_numMin",		"Min" )
@@ -89,13 +87,15 @@ function PANEL:OnMousePressed( mousecode )
 
 	self:SetShouldDrawScreen( mousecode == MOUSE_LEFT )
 
-	g_Active = self
+	hook.Add( "DrawOverlay", self, function()
+		self:PaintScratchWindow()
+	end )
 
 end
 
 function PANEL:OnMouseReleased( mousecode )
 
-	g_Active = nil
+	hook.Remove( "DrawOverlay", self)
 
 	self:SetActive( false )
 	self:MouseCapture( false )
@@ -360,11 +360,3 @@ function PANEL:GenerateExample()
 end
 
 derma.DefineControl( "DNumberScratch", "", PANEL, "DImageButton" )
-
-hook.Add( "DrawOverlay", "DrawNumberScratch", function()
-
-	if ( !IsValid( g_Active ) ) then return end
-
-	g_Active:PaintScratchWindow()
-
-end )

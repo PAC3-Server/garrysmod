@@ -149,72 +149,80 @@ end
 
 if ( CLIENT ) then
 
-	hook.Add( "PreDrawHalos", "PropertiesHover", function()
+	hook.Add("OnContextMenuOpen", "Properties", function()
 
-		if ( !IsValid( vgui.GetHoveredPanel() ) || vgui.GetHoveredPanel() != g_ContextMenu ) then return end
+		hook.Add( "PreDrawHalos", "PropertiesHover", function()
 
-		local ent = GetHovered( EyePos(), LocalPlayer():GetAimVector() )
-		if ( !IsValid( ent ) ) then return end
+			if ( !IsValid( vgui.GetHoveredPanel() ) || vgui.GetHoveredPanel() != g_ContextMenu ) then return end
 
-		local c = Color( 255, 255, 255, 255 )
-		c.r = 200 + math.sin( RealTime() * 50 ) * 55
-		c.g = 200 + math.sin( RealTime() * 20 ) * 55
-		c.b = 200 + math.cos( RealTime() * 60 ) * 55
+			local ent = GetHovered( EyePos(), LocalPlayer():GetAimVector() )
+			if ( !IsValid( ent ) ) then return end
 
-		local t = { ent }
-		if ( ent.GetActiveWeapon && IsValid( ent:GetActiveWeapon() ) ) then table.insert( t, ent:GetActiveWeapon() ) end
-		halo.Add( t, c, 2, 2, 2, true, false )
+			local c = Color( 255, 255, 255, 255 )
+			c.r = 200 + math.sin( RealTime() * 50 ) * 55
+			c.g = 200 + math.sin( RealTime() * 20 ) * 55
+			c.b = 200 + math.cos( RealTime() * 60 ) * 55
 
-	end )
+			local t = { ent }
+			if ( ent.GetActiveWeapon && IsValid( ent:GetActiveWeapon() ) ) then table.insert( t, ent:GetActiveWeapon() ) end
+			halo.Add( t, c, 2, 2, 2, true, false )
 
-	--
-	-- Hook the GUIMousePressed call, which is called when the client clicks on the
-	-- gui.
-	--
-	hook.Add( "GUIMousePressed", "PropertiesClick", function( code, vector )
-
-		if ( !IsValid( vgui.GetHoveredPanel() ) || vgui.GetHoveredPanel() != g_ContextMenu ) then return end
-
-		if ( code == MOUSE_RIGHT && !input.IsButtonDown( MOUSE_LEFT ) ) then
-			OnScreenClick( EyePos(), vector )
-		end
-
-	end )
-
-	--
-	-- Hook the GUIMousePressed call, which is called when the client clicks on the
-	-- gui.
-	--
-	local wasPressed = false
-	hook.Add( "PreventScreenClicks", "PropertiesPreventClicks", function()
-
-		if ( !input.IsButtonDown( MOUSE_RIGHT ) ) then wasPressed = false end
-
-		if ( wasPressed && input.IsButtonDown( MOUSE_RIGHT ) && !input.IsButtonDown( MOUSE_LEFT ) ) then return true end
-
-		if ( !IsValid( vgui.GetHoveredPanel() ) || vgui.GetHoveredPanel() != g_ContextMenu ) then return end
-
-		local ply = LocalPlayer()
-		if ( !IsValid( ply ) ) then return end
+		end )
 
 		--
-		-- Are we pressing the right mouse button?
-		-- (We check whether we're pressing the left too, to allow for physgun freezes)
+		-- Hook the GUIMousePressed call, which is called when the client clicks on the
+		-- gui.
 		--
-		if ( input.IsButtonDown( MOUSE_RIGHT ) && !input.IsButtonDown( MOUSE_LEFT ) ) then
+		hook.Add( "GUIMousePressed", "PropertiesClick", function( code, vector )
 
-			--
-			-- Are we hovering an entity? If so, then stomp the action
-			--
-			local hovered = GetHovered( EyePos(), ply:GetAimVector() )
+			if ( !IsValid( vgui.GetHoveredPanel() ) || vgui.GetHoveredPanel() != g_ContextMenu ) then return end
 
-			if ( IsValid( hovered ) ) then
-				wasPressed = true
-				return true
+			if ( code == MOUSE_RIGHT && !input.IsButtonDown( MOUSE_LEFT ) ) then
+				OnScreenClick( EyePos(), vector )
 			end
 
-		end
+		end )
 
-	end )
+		--
+		-- Hook the GUIMousePressed call, which is called when the client clicks on the
+		-- gui.
+		--
+		local wasPressed = false
+		hook.Add( "PreventScreenClicks", "PropertiesPreventClicks", function()
 
+			if ( !input.IsButtonDown( MOUSE_RIGHT ) ) then wasPressed = false end
+
+			if ( wasPressed && input.IsButtonDown( MOUSE_RIGHT ) && !input.IsButtonDown( MOUSE_LEFT ) ) then return true end
+
+			if ( !IsValid( vgui.GetHoveredPanel() ) || vgui.GetHoveredPanel() != g_ContextMenu ) then return end
+
+			local ply = LocalPlayer()
+			if ( !IsValid( ply ) ) then return end
+
+			--
+			-- Are we pressing the right mouse button?
+			-- (We check whether we're pressing the left too, to allow for physgun freezes)
+			--
+			if ( input.IsButtonDown( MOUSE_RIGHT ) && !input.IsButtonDown( MOUSE_LEFT ) ) then
+
+				--
+				-- Are we hovering an entity? If so, then stomp the action
+				--
+				local hovered = GetHovered( EyePos(), ply:GetAimVector() )
+
+				if ( IsValid( hovered ) ) then
+					wasPressed = true
+					return true
+				end
+
+			end
+
+		end )
+	end)
+
+	hook.Add("OnContextMenuClose", "Properties", function()
+		hook.Remove("PreDrawHalos", "PropertiesHover")
+		hook.Remove("GUIMousePressed", "PropertiesClick")
+		hook.Remove("PreventScreenClicks", "PropertiesPreventClicks")
+	end)
 end

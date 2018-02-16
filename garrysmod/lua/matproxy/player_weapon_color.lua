@@ -10,7 +10,7 @@ matproxy.Add( {
 
 	bind = function( self, mat, ent )
 
-		if ( !IsValid( ent ) ) then return end
+		if not ent then return end
 
 		local owner = ent:GetOwner()
 		if ( !IsValid( owner ) or !owner:IsPlayer() ) then return end
