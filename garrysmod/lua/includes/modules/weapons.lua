@@ -145,7 +145,7 @@ function Get( name )
 		if ( !BaseWeapon ) then
 			Msg( "SWEP (", name, ") is derived from non existant SWEP (", retval.Base, ") - Expect errors!\n" )
 		else
-			retval = TableInherit( retval, Get( retval.Base ) )
+			retval = TableInherit( retval, BaseWeapon )
 		end
 
 	end
