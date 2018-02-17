@@ -236,7 +236,17 @@ function dragndrop.Think()
 
 end
 
-hook.Add( "DrawOverlay", "DragNDropPaint", function()
+hook.Add("VGUIMousePressed", "DragNDrop", function()
+	hook.Add( "Think", "DragNDropThink", dragndrop.Think )
+	hook.Add( "DrawOverlay", "DragNDropDrawOverlay", dragndrop.DrawOverlay )
+end)
+
+hook.Add("VGUIMouseReleased", "DragNDrop", function()
+	hook.Remove( "Think", "DragNDropThink" )
+	hook.Remove( "DrawOverlay", "DragNDropDrawOverlay" )
+end)
+
+function dragndrop.DrawOverlay()
 
 	if ( dragndrop.m_Dragging == nil ) then return end
 	if ( dragndrop.m_DraggingMain == nil ) then return end
@@ -285,7 +295,7 @@ hook.Add( "DrawOverlay", "DragNDropPaint", function()
 
 	DisableClipping( false )
 
-end )
+end
 
 
 
@@ -407,14 +417,11 @@ function meta:OnStartDragging()
 
 	end
 
-	hook.Add( "Think", "DragNDropThink", dragndrop.Think )
-
 end
 
 function meta:OnStopDragging()
 	self.Dragging = false
 
-	hook.Remove( "Think", "DragNDropThink")
 end
 
 function meta:DragMousePress( mcode )
