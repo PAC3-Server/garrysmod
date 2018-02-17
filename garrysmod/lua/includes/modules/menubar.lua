@@ -6,7 +6,7 @@ function menubar.Init()
 	menubar.Control = vgui.Create( "DMenuBar" )
 	menubar.Control:Dock( TOP )
 	menubar.Control:SetVisible( false )
-	
+
 	hook.Run( "PopulateMenuBar", menubar.Control )
 
 end
@@ -31,9 +31,9 @@ function menubar.IsParent( pnl )
 
 end
 
-
-hook.Add( "OnGamemodeLoaded", "CreateMenuBar", function()
-
-	menubar.Init()
-
+hook.Add( "PlayerBindPress", "CreateMenuBar", function(ply, bind, press)
+	if bind == "+menu" or bind == "+menu_context" then
+		menubar.Init()
+		hook.Remove( "PlayerBindPress", "CreateMenuBar")
+	end
 end )

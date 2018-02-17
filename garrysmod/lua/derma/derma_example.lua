@@ -10,7 +10,7 @@ function PANEL:Init()
 	self:InvalidateLayout( true )
 	local w, h = self:GetSize()
 
-	local Controls = table.Copy( derma.GetControlList() )
+	local Controls = table.CopySimple( derma.GetControlList() )
 
 	for key, ctrl in SortedPairs( Controls ) do
 

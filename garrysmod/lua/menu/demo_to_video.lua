@@ -151,7 +151,7 @@ concommand.Add( "gm_demo_to_video", function( ply, cmd, args )
 		RunConsoleCommand( "progress_enable",	1 )
 		RunConsoleCommand( "playdemo",			demoname )
 
-		VideoSettings = table.Copy( settings )
+		VideoSettings = table.CopySimple( settings )
 
 		--Window:Remove()
 

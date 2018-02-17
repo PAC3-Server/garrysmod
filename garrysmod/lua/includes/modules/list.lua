@@ -18,7 +18,7 @@ local g_Lists = {}
 function Get( list )
 
 	g_Lists[ list ] = g_Lists[ list ] or {}
-	return table.Copy( g_Lists[ list ] )
+	return table.CopySimple( g_Lists[ list ] )
 	
 end
 

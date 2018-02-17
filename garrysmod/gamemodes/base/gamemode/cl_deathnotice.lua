@@ -133,11 +133,11 @@ function GM:AddDeathNotice( Attacker, team1, Inflictor, Victim, team2 )
 	Death.right		= Victim
 	Death.icon		= Inflictor
 
-	if ( team1 == -1 ) then Death.color1 = table.Copy( NPC_Color )
-	else Death.color1 = table.Copy( team.GetColor( team1 ) ) end
+	if ( team1 == -1 ) then Death.color1 = table.CopySimple( NPC_Color )
+	else Death.color1 = table.CopySimple( team.GetColor( team1 ) ) end
 	
-	if ( team2 == -1 ) then Death.color2 = table.Copy( NPC_Color )
-	else Death.color2 = table.Copy( team.GetColor( team2 ) ) end
+	if ( team2 == -1 ) then Death.color2 = table.CopySimple( NPC_Color )
+	else Death.color2 = table.CopySimple( team.GetColor( team2 ) ) end
 	
 	if (Death.left == Death.right) then
 		Death.left = nil

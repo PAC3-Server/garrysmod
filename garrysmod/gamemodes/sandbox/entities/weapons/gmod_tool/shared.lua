@@ -40,11 +40,13 @@ function SWEP:InitializeTools()
 	local temp = {}
 
 	for k,v in pairs( self.Tool ) do
-
-		temp[k] = table.Copy( v )
+		temp[k] = table.CopySimple( v , nil, true)
+		setmetatable(temp[k], getmetatable(v))
+		temp[k].__index = temp[k]
 		temp[k].SWEP = self
 		temp[k].Owner = self.Owner
 		temp[k].Weapon = self.Weapon
+
 		temp[k]:Init()
 
 	end

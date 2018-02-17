@@ -709,8 +709,8 @@ function Paste( Player, EntityList, ConstraintList )
 	--
 	-- Copy the table - because we're gonna be changing some stuff on it.
 	--
-	local EntityList = table.Copy( EntityList )
-	local ConstraintList = table.Copy( ConstraintList )
+	local EntityList = table.CopySimple( EntityList )
+	local ConstraintList = table.CopySimple( ConstraintList )
 
 	local CreatedEntities = {}
 
@@ -742,9 +742,9 @@ function Paste( Player, EntityList, ConstraintList )
 		
 		if ( CreatedEntities[ k ] ) then
 		
-			CreatedEntities[ k ].BoneMods = table.Copy( v.BoneMods )
-			CreatedEntities[ k ].EntityMods = table.Copy( v.EntityMods )
-			CreatedEntities[ k ].PhysicsObjects = table.Copy( v.PhysicsObjects )
+			CreatedEntities[ k ].BoneMods = table.CopySimple( v.BoneMods )
+			CreatedEntities[ k ].EntityMods = table.CopySimple( v.EntityMods )
+			CreatedEntities[ k ].PhysicsObjects = table.CopySimple( v.PhysicsObjects )
 		
 		else
 		

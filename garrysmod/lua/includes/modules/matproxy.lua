@@ -63,7 +63,7 @@ function Init( name, uname, mat, values )
 	local proxy = ProxyList[ name ]
 	if ( !proxy ) then return end
 
-	ActiveList[ uname ] = table.Copy( proxy )
+	ActiveList[ uname ] = table.CopySimple( proxy )
 	local proxy = ActiveList[ uname ];
 
 	if ( !proxy.init ) then return end

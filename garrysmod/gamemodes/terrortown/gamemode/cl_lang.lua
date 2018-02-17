@@ -99,7 +99,7 @@ function LANG.GetUnsafeNamed(name) return LANG.Strings[name] end
 function LANG.GetLanguageTable(lang_name)
    lang_name = lang_name or LANG.ActiveLanguage
 
-   local cpy = table.Copy(LANG.Strings[lang_name])
+   local cpy = table.CopySimple(LANG.Strings[lang_name])
    SetFallback(cpy)
 
    return cpy

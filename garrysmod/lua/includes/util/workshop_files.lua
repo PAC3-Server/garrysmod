@@ -11,7 +11,7 @@ function WorkshopFileBase( namespace, requiredtags )
 
 	function ret:Fetch( type, offset, perpage, extratags, searchText )
 
-		local tags = table.Copy( requiredtags )
+		local tags = table.CopySimple( requiredtags )
 		for k, v in pairs( extratags ) do
 			if ( v == "" ) then continue end
 			table.insert( tags, v )

@@ -153,7 +153,7 @@ end
 -----------------------------------------------------------]]
 function GetSkinTable()
 
-	return table.Copy( SkinList )
+	return table.CopySimple( SkinList )
 
 end
 

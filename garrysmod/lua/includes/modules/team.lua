@@ -171,7 +171,7 @@ end
 function GetColor( index )
 
 	if (!TeamInfo[index]) then return DefaultColor end
-	return table.Copy( TeamInfo[index].Color )
+	return table.CopySimple( TeamInfo[index].Color )
 
 end
 

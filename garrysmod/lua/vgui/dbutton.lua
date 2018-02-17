@@ -116,7 +116,7 @@ end
 
 local PANEL = derma.DefineControl( "DButton", "A standard Button", PANEL, "DLabel" )
 
-PANEL = table.Copy( PANEL )
+PANEL = table.CopySimple( PANEL )
 
 function PANEL:SetActionFunction( func )
 

@@ -144,7 +144,7 @@ function PANEL:SetWidth( iSize )
 
 end
 
-derma.DefineControl( "DListView_Column", "", table.Copy( PANEL ), "Panel" )
+derma.DefineControl( "DListView_Column", "", table.CopySimple( PANEL ), "Panel" )
 
 --[[---------------------------------------------------------
 	DListView_ColumnPlain

@@ -92,7 +92,7 @@ hook.Add( "RenderScene", "RenderForDemo", function ( ViewOrigin, ViewAngles, Vie
 		AutoFocusPoint = LerpVector( focuspeed, AutoFocusPoint, trace.HitPos )
 		local UsableFocusPoint = view.origin + view.angles:Forward() * AutoFocusPoint:Distance( view.origin )
 
-		RenderDoF( view.origin, view.angles, UsableFocusPoint, VideoSettings.dofsize * 0.3, VideoSettings.dofsteps, VideoSettings.dofpasses, false, table.Copy( view ) )
+		RenderDoF( view.origin, view.angles, UsableFocusPoint, VideoSettings.dofsize * 0.3, VideoSettings.dofsteps, VideoSettings.dofpasses, false, table.CopySimple( view ) )
 
 	else
 

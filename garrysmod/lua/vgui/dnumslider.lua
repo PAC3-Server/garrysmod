@@ -201,7 +201,7 @@ function PANEL:GenerateExample( ClassName, PropertySheet, Width, Height )
 
 end
 
-derma.DefineControl( "DNumSlider", "Menu Option Line", table.Copy( PANEL ), "Panel" )
+derma.DefineControl( "DNumSlider", "Menu Option Line", table.CopySimple( PANEL ), "Panel" )
 
 -- No example for this fella
 PANEL.GenerateExample = nil

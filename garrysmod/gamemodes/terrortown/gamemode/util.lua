@@ -239,7 +239,7 @@ function table.CopyKeys(tbl, keys)
    for _, k in pairs(keys) do
       val = tbl[k]
       if type(val) == "table" then
-         out[k] = table.Copy(val)
+         out[k] = table.CopySimple(val)
       else
          out[k] = val
       end

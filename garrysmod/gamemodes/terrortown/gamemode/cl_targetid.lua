@@ -20,7 +20,7 @@ local ClassHint = {
 -- Basic access for servers to add/modify hints. They override hints stored on
 -- the entities themselves.
 function GM:AddClassHint(cls, hint)
-   ClassHint[cls] = table.Copy(hint)
+   ClassHint[cls] = table.CopySimple(hint)
 end
 
 

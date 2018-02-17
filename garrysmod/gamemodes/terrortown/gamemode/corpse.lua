@@ -423,7 +423,7 @@ function CORPSE.Create(ply, attacker, dmginfo)
 
    rag.was_headshot = (ply.was_headshot and dmginfo:IsBulletDamage())
    rag.time = CurTime()
-   rag.kills = table.Copy(ply.kills)
+   rag.kills = table.CopySimple(ply.kills)
 
    rag.killer_sample = GetKillerSample(ply, attacker, dmginfo)
 

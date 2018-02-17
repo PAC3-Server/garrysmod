@@ -55,7 +55,6 @@ local function SetupCustomNode( node, pnlContent, needsapp )
 	end
 
 	node.DoClick = function( self )
-
 		self:DoPopulate()
 		pnlContent:SwitchPanel( self.PropPanel )
 
@@ -155,6 +154,8 @@ function AddPropsOfParent( pnlContent, node, parentid, customProps )
 
 end
 
+local clicked_first_node = false
+
 hook.Add( "PopulateContent", "AddCustomContent", function( pnlContent, tree, node )
 
 	local node = AddCustomizableNode( pnlContent, "#spawnmenu.category.your_spawnlists", "", tree )
@@ -181,10 +182,16 @@ hook.Add( "PopulateContent", "AddCustomContent", function( pnlContent, tree, nod
 
 	CustomizableSpawnlistNode = node
 
-	-- Select the first panel
-	local FirstNode = node:GetChildNode( 0 )
-	if ( IsValid( FirstNode ) ) then
-		FirstNode:InternalDoClick()
+	if not clicked_first_node then
+		hook.Add("OnSpawnMenuOpen", "click_first_tree_node", function()
+			hook.Remove("OnSpawnMenuOpen", "click_first_tree_node")
+			-- Select the first panel
+			local FirstNode = node:GetChildNode( 0 )
+			if ( IsValid( FirstNode ) ) then
+				FirstNode:InternalDoClick()
+			end
+		end)
+		clicked_first_node = true
 	end
 
 	-- Custom stuff from addons

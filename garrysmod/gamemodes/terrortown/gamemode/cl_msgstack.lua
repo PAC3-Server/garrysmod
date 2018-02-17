@@ -66,10 +66,10 @@ end
 
 -- Internal
 function MSTACK:AddMessageEx(item)
-   item.col = table.Copy(item.col or msgcolors.generic_text)
+   item.col = table.CopySimple(item.col or msgcolors.generic_text)
    item.col.a_max = item.col.a
 
-   item.bg  = table.Copy(item.bg or msgcolors.generic_bg)
+   item.bg  = table.CopySimple(item.bg or msgcolors.generic_bg)
    item.bg.a_max = item.bg.a
 
    item.text = self:WrapText(item.text, text_width)

@@ -78,7 +78,7 @@ function SCORE:HandleKill( victim, attacker, dmginfo )
       if dmginfo:IsExplosionDamage() and attacker:GetTraitor() and victim:GetTraitor() then
          local infl = dmginfo:GetInflictor()
          if IsValid(infl) and infl:GetClass() == "ttt_c4" then
-            e.att = table.Copy(e.vic)
+            e.att = table.CopySimple(e.vic)
          end
       end
    end

@@ -102,7 +102,7 @@ function ENT:OnEntityCopyTableFinish( tab )
 	tab.Model = self.AttachedEntity:GetModel()
 
 	-- Store the attached entity's table so we can restore it after being pasted
-	tab.AttachedEntityInfo = table.Copy( duplicator.CopyEntTable( self.AttachedEntity ) )
+	tab.AttachedEntityInfo = table.CopySimple( duplicator.CopyEntTable( self.AttachedEntity ) )
 	tab.AttachedEntityInfo.Pos = nil -- Don't even save angles and position, we are a parented entity
 	tab.AttachedEntityInfo.Angle = nil
 
@@ -121,12 +121,12 @@ function ENT:PostEntityPaste( ply )
 		duplicator.DoGeneric( self.AttachedEntity, self.AttachedEntityInfo )
 
 		if ( self.AttachedEntityInfo.EntityMods ) then
-			self.AttachedEntity.EntityMods = table.Copy( self.AttachedEntityInfo.EntityMods )
+			self.AttachedEntity.EntityMods = table.CopySimple( self.AttachedEntityInfo.EntityMods )
 			duplicator.ApplyEntityModifiers( ply, self.AttachedEntity )
 		end
 
 		if ( self.AttachedEntityInfo.BoneMods ) then
-			self.AttachedEntity.BoneMods = table.Copy( self.AttachedEntityInfo.BoneMods )
+			self.AttachedEntity.BoneMods = table.CopySimple( self.AttachedEntityInfo.BoneMods )
 			duplicator.ApplyBoneModifiers( ply, self.AttachedEntity )
 		end
 

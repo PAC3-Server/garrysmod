@@ -11,7 +11,7 @@ function GetEquipmentForRole(role)
    -- need to build equipment cache?
    if not Equipment then
       -- start with all the non-weapon goodies
-      local tbl = table.Copy(EquipmentItems)
+      local tbl = table.CopySimple(EquipmentItems)
 
       -- find buyable weapons to load info from
       for k, v in pairs(weapons.GetList()) do

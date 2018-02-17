@@ -213,7 +213,7 @@ function PANEL:SaveColor( btn, color )
 	-- ( i.e. for each m_NumRows value, save to a different cookie prefix/suffix? )
 
 	-- Avoid unintended color changing.
-	color = table.Copy( color or color_Error )
+	color = table.CopySimple( color or color_Error )
 
 	btn:SetColor( color )
 	self:SetCookie( "col." .. btn:GetID(), string.FromColor( color ) )

@@ -72,7 +72,7 @@ end
 
 function PANEL:LoadToolsFromTable( inTable )
 
-	local inTable = table.Copy( inTable )
+	local inTable = table.CopySimple( inTable )
 
 	for k, v in pairs( inTable ) do
 
