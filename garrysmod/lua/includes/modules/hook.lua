@@ -28,6 +28,8 @@ function Add( event_name, name, func )
 	if ( !isfunction( func ) ) then return end
 	if ( !isstring( event_name ) ) then return end
 
+	Remove( event_name, name )
+
 	if not Hooks[ event_name ] or not Hooks[ event_name ][ name ] then
 
 		if (Hooksi[ event_name ] == nil) then
