@@ -215,7 +215,8 @@ end
 
 -- Hook to create the spawnmenu at the appropriate time (when all sents and sweps are loaded)
 hook.Add( "PlayerBindPress", "CreateSpawnMenu", function(ply, bind, press)
-	if bind == "+menu" then
+	if bind == "+menu" or bind == "+menu_context" then
+		menubar.Init()
 		CreateSpawnMenu()
 		hook.Remove( "PlayerBindPress", "CreateSpawnMenu")
 	end

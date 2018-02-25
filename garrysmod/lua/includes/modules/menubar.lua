@@ -30,10 +30,3 @@ function menubar.IsParent( pnl )
 	return menubar.Control:GetParent() == pnl
 
 end
-
-hook.Add( "PlayerBindPress", "CreateMenuBar", function(ply, bind, press)
-	if bind == "+menu" or bind == "+menu_context" then
-		menubar.Init()
-		hook.Remove( "PlayerBindPress", "CreateMenuBar")
-	end
-end )
