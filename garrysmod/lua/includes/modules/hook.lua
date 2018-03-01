@@ -10,12 +10,14 @@ module( "hook" )
 
 local Hooks = {}
 local Hooksi = {}
+local count = {}
 
 --[[---------------------------------------------------------
     Name: GetTable
     Desc: Returns a table of all hooks.
 -----------------------------------------------------------]]
 function GetTable() return Hooks end
+function GetTablei() return Hooksi end
 
 
 --[[---------------------------------------------------------
@@ -23,7 +25,7 @@ function GetTable() return Hooks end
     Args: string hookName, any identifier, function func
     Desc: Add a hook to listen to the specified event.
 -----------------------------------------------------------]]
-function Add( event_name, name, func )
+function Add( event_name, name, func, priority )
 
 	if ( !isfunction( func ) ) then return end
 	if ( !isstring( event_name ) ) then return end
@@ -36,9 +38,18 @@ function Add( event_name, name, func )
 			Hooksi[ event_name ] = {}
 		end
 
-		table.insert(Hooksi[ event_name ], {name = name, func = func, object = not isstring(name)})
+		table.insert(Hooksi[ event_name ], {
+			name = name,
+			func = func,
+			object = not isstring(name),
+			priority = priority or 0,
+		})
 
-		Hooksi[ event_name ].count = #Hooksi[ event_name ]
+		table.sort(Hooksi[ event_name ], function(a, b)
+			return a.priority < b.priority
+		end)
+
+		count[ event_name ] = #Hooksi[ event_name ]
 	end
 
 	if (Hooks[ event_name ] == nil) then
@@ -66,7 +77,11 @@ function Remove( event_name, name )
 				break
 			end
 		end
-		Hooksi[ event_name ].count = #Hooksi[ event_name ]
+		count[ event_name ] = #Hooksi[ event_name ]
+
+		table.sort(Hooksi[ event_name ], function(a, b)
+			return a.priority > b.priority
+		end)
 	end
 
 	Hooks[ event_name ][ name ] = nil
@@ -96,60 +111,6 @@ end
     Desc: Calls hooks associated with the hook name.
 -----------------------------------------------------------]]
 function Call( name, gm, ... )
---[[
-		--
-	-- Run hooks
-	--
-	local HookTable = Hooks[ name ]
-	if ( HookTable != nil ) then
-
-		local a, b, c, d, e, f;
-
-		for k, v in pairs( HookTable ) do
-
-			if ( isstring( k ) ) then
-
-				--
-				-- If it's a string, it's cool
-				--
-				a, b, c, d, e, f = v( ... )
-
-			else
-
-				--
-				-- If the key isn't a string - we assume it to be an entity
-				-- Or panel, or something else that IsValid works on.
-				--
-				if k:IsValid() then
-					a, b, c, d, e, f = v( k, ... )
-				else
-					HookTable[ k ] = nil
-				end
-			end
-
-			--
-			-- Hook returned a value - it overrides the gamemode function
-			--
-			if ( a != nil ) then
-				return a, b, c, d, e, f
-			end
-
-		end
-	end
-
-	--
-	-- Call the gamemode function
-	--
-	if ( !gm ) then return end
-
-	local GamemodeFunction = gm[ name ]
-	if ( GamemodeFunction == nil ) then return end
-
-	return GamemodeFunction( gm, ... )
-
-]]
-
-
 	--
 	-- Run hooks
 	--
@@ -158,7 +119,7 @@ function Call( name, gm, ... )
 
 		local a, b, c, d, e, f;
 
-		for i = HookTable.count, 1, -1 do
+		for i = count[name], 1, -1 do
 
 			local v = HookTable[i]
 
