@@ -498,28 +498,14 @@ function table.ClearKeys( Table, bSaveKey )
 
 end
 
-local function fnPairsSorted( pTable, Index )
+local function keyValuePairs( state )
 
-	if ( Index == nil ) then
-		Index = 1
-	else
-		for k, v in pairs( pTable.__SortedIndex ) do
-			if ( v == Index ) then
-				Index = k + 1
-				break
-			end
-		end
-	end
+	state.Index = state.Index + 1
 
-	local Key = pTable.__SortedIndex[ Index ]
-	if ( !Key ) then
-		pTable.__SortedIndex = nil
-		return
-	end
+	local keyValue = state.KeyValues[ state.Index ]
+	if ( !keyValue ) then return end
 
-	Index = Index + 1
-
-	return Key, pTable[ Key ]
+	return keyValue.key, keyValue.val
 
 end
 
@@ -531,20 +517,13 @@ function SortedPairs( pTable, Desc )
 
 	pTable = table.CopySimpleList( pTable )
 
-	local SortedIndex = {}
-	for k, v in pairs( pTable ) do
-		table.insert( SortedIndex, k )
-	end
-
 	if ( Desc ) then
-		table.sort( SortedIndex, function( a, b ) return a > b end )
+		table.sort( pTable, function( a, b ) return a.key > b.key end )
 	else
-		table.sort( SortedIndex )
+		table.sort( pTable, function( a, b ) return a.key < b.key end )
 	end
 
-	pTable.__SortedIndex = SortedIndex
-
-	return fnPairsSorted, pTable, nil
+	return keyValuePairs, { Index = 0, KeyValues = pTable }
 
 end
 
@@ -556,24 +535,13 @@ function SortedPairsByValue( pTable, Desc )
 
 	pTable = table.CopySimpleList( pTable )
 
-	local SortedIndex = {}
-	for k, v in pairs( pTable ) do
-		table.insert( SortedIndex, { key = k, val = v } )
-	end
-
 	if ( Desc ) then
-		table.sort( SortedIndex, function( a, b ) return a.val > b.val end )
+		table.sort( pTable, function( a, b ) return a.val > b.val end )
 	else
-		table.sort( SortedIndex, function( a, b ) return a.val < b.val end )
+		table.sort( pTable, function( a, b ) return a.val < b.val end )
 	end
 
-	for k, v in pairs( SortedIndex ) do
-		SortedIndex[ k ] = v.key
-	end
-
-	pTable.__SortedIndex = SortedIndex
-
-	return fnPairsSorted, pTable, nil
+	return keyValuePairs, { Index = 0, KeyValues = pTable }
 
 end
 
@@ -584,20 +552,14 @@ end
 function SortedPairsByMemberValue( pTable, pValueName, Desc )
 
 	pTable = table.CopySimpleList( pTable )
-	Desc = Desc or false
 
-	local pSortedTable = table.ClearKeys( pTable, true )
-
-	table.SortByMember( pSortedTable, pValueName, !Desc )
-
-	local SortedIndex = {}
-	for k, v in ipairs( pSortedTable ) do
-		table.insert( SortedIndex, v.__key )
+	for k,v in pairs( pTable ) do
+		v.member = v.val[ pValueName ]
 	end
 
-	pTable.__SortedIndex = SortedIndex
+	table.SortByMember( pTable, "member", !Desc )
 
-	return fnPairsSorted, pTable, nil
+	return keyValuePairs, { Index = 0, KeyValues = pTable }
 
 end
 
@@ -608,24 +570,18 @@ function RandomPairs( pTable, Desc )
 
 	pTable = table.CopySimpleList( pTable )
 
-	local SortedIndex = {}
-	for k, v in pairs( pTable ) do
-		table.insert( SortedIndex, { key = k, val = math.random( 1, 1000 ) } )
+	for k,v in pairs( pTable ) do
+		v.rand = math.random( 1, 1000000 )
 	end
 
+	-- descending/ascending for a random order, really?
 	if ( Desc ) then
-		table.sort( SortedIndex, function(a,b) return a.val>b.val end )
+		table.sort( pTable, function(a,b) return a.rand > b.rand end )
 	else
-		table.sort( SortedIndex, function(a,b) return a.val<b.val end )
+		table.sort( pTable, function(a,b) return a.rand < b.rand end )
 	end
 
-	for k, v in pairs( SortedIndex ) do
-		SortedIndex[ k ] = v.key
-	end
-
-	pTable.__SortedIndex = SortedIndex
-
-	return fnPairsSorted, pTable, nil
+	return keyValuePairs, { Index = 0, KeyValues = pTable }
 
 end
 
@@ -643,12 +599,12 @@ function table.GetFirstValue( t )
 end
 
 function table.GetLastKey( t )
-	local k, v = next( t, table.Count(t) - 1 )
+	local k, v = next( t, table.Count( t ) - 1 )
 	return k
 end
 
 function table.GetLastValue( t )
-	local k, v = next( t, table.Count(t) - 1 )
+	local k, v = next( t, table.Count( t ) - 1 )
 	return v
 end
 
