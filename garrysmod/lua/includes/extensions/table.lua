@@ -42,6 +42,38 @@ function table.Copy( t, lookup_table )
 	return copy
 end
 
+function table.CopySimple( t, lookup_table, lol )
+	if ( t == nil ) then return nil end
+
+	local copy = {}
+
+	for i, v in pairs( t ) do
+		if ( !istable( v ) ) then
+			copy[ i ] = v
+		else
+			lookup_table = lookup_table or {}
+			lookup_table[ t ] = copy
+			if ( lookup_table[ v ] ) then
+				copy[ i ] = lookup_table[ v ] -- we already copied this table. reuse the copy.
+			else
+				copy[ i ] = table.CopySimple( v, lookup_table ) -- not yet copied. copy it.
+			end
+		end
+	end
+	return copy
+end
+
+
+function table.CopySimpleList( t )
+	local copy = {}
+
+	for k, v in pairs(t) do
+		copy[k] = v
+	end
+
+	return copy
+end
+
 --[[---------------------------------------------------------
 	Name: Empty( tab )
 	Desc: Empty a table
