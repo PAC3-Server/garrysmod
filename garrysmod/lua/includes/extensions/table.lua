@@ -25,7 +25,7 @@ function table.Copy( t, lookup_table )
 	if ( t == nil ) then return nil end
 
 	local copy = {}
-	setmetatable(copy, debug.getmetatable(t))
+	setmetatable( copy, debug.getmetatable( t ) )
 	for i, v in pairs( t ) do
 		if ( !istable( v ) ) then
 			copy[ i ] = v
@@ -39,38 +39,6 @@ function table.Copy( t, lookup_table )
 			end
 		end
 	end
-	return copy
-end
-
-function table.CopySimple( t, lookup_table, lol )
-	if ( t == nil ) then return nil end
-
-	local copy = {}
-
-	for i, v in pairs( t ) do
-		if ( !istable( v ) ) then
-			copy[ i ] = v
-		else
-			lookup_table = lookup_table or {}
-			lookup_table[ t ] = copy
-			if ( lookup_table[ v ] ) then
-				copy[ i ] = lookup_table[ v ] -- we already copied this table. reuse the copy.
-			else
-				copy[ i ] = table.CopySimple( v, lookup_table ) -- not yet copied. copy it.
-			end
-		end
-	end
-	return copy
-end
-
-
-function table.CopySimpleList( t )
-	local copy = {}
-
-	for k, v in pairs(t) do
-		copy[k] = v
-	end
-
 	return copy
 end
 
@@ -509,21 +477,33 @@ local function keyValuePairs( state )
 
 end
 
+local function toKeyValues( tbl )
+
+	local result = {}
+
+	for k,v in pairs( tbl ) do
+		table.insert( result, { key = k, val = v } )
+	end
+
+	return result
+
+end
+
 --[[---------------------------------------------------------
 	A Pairs function
 		Sorted by TABLE KEY
 -----------------------------------------------------------]]
 function SortedPairs( pTable, Desc )
 
-	pTable = table.CopySimpleList( pTable )
+	local sortedTbl = toKeyValues( pTable )
 
 	if ( Desc ) then
-		table.sort( pTable, function( a, b ) return a.key > b.key end )
+		table.sort( sortedTbl, function( a, b ) return a.key > b.key end )
 	else
-		table.sort( pTable, function( a, b ) return a.key < b.key end )
+		table.sort( sortedTbl, function( a, b ) return a.key < b.key end )
 	end
 
-	return keyValuePairs, { Index = 0, KeyValues = pTable }
+	return keyValuePairs, { Index = 0, KeyValues = sortedTbl }
 
 end
 
@@ -533,15 +513,15 @@ end
 -----------------------------------------------------------]]
 function SortedPairsByValue( pTable, Desc )
 
-	pTable = table.CopySimpleList( pTable )
+	local sortedTbl = toKeyValues( pTable )
 
 	if ( Desc ) then
-		table.sort( pTable, function( a, b ) return a.val > b.val end )
+		table.sort( sortedTbl, function( a, b ) return a.val > b.val end )
 	else
-		table.sort( pTable, function( a, b ) return a.val < b.val end )
+		table.sort( sortedTbl, function( a, b ) return a.val < b.val end )
 	end
 
-	return keyValuePairs, { Index = 0, KeyValues = pTable }
+	return keyValuePairs, { Index = 0, KeyValues = sortedTbl }
 
 end
 
@@ -551,15 +531,15 @@ end
 -----------------------------------------------------------]]
 function SortedPairsByMemberValue( pTable, pValueName, Desc )
 
-	pTable = table.CopySimpleList( pTable )
+	local sortedTbl = toKeyValues( pTable )
 
-	for k,v in pairs( pTable ) do
+	for k,v in pairs( sortedTbl ) do
 		v.member = v.val[ pValueName ]
 	end
 
-	table.SortByMember( pTable, "member", !Desc )
+	table.SortByMember( sortedTbl, "member", !Desc )
 
-	return keyValuePairs, { Index = 0, KeyValues = pTable }
+	return keyValuePairs, { Index = 0, KeyValues = sortedTbl }
 
 end
 
@@ -568,20 +548,20 @@ end
 -----------------------------------------------------------]]
 function RandomPairs( pTable, Desc )
 
-	pTable = table.CopySimpleList( pTable )
+	local sortedTbl = toKeyValues( pTable )
 
-	for k,v in pairs( pTable ) do
+	for k,v in pairs( sortedTbl ) do
 		v.rand = math.random( 1, 1000000 )
 	end
 
 	-- descending/ascending for a random order, really?
 	if ( Desc ) then
-		table.sort( pTable, function(a,b) return a.rand > b.rand end )
+		table.sort( sortedTbl, function(a,b) return a.rand > b.rand end )
 	else
-		table.sort( pTable, function(a,b) return a.rand < b.rand end )
+		table.sort( sortedTbl, function(a,b) return a.rand < b.rand end )
 	end
 
-	return keyValuePairs, { Index = 0, KeyValues = pTable }
+	return keyValuePairs, { Index = 0, KeyValues = sortedTbl }
 
 end
 
